@@ -255,8 +255,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing
     ///
-    open class func logln(_ closure: @autoclosure () -> Any?, level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func logln(_ closure: @autoclosure () -> Any?, level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log a message if the logger's log level is equal to or lower than the specified level.
@@ -271,8 +271,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing
     ///
-    open class func logln(_ level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func logln(_ level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log a message if the logger's log level is equal to or lower than the specified level.
@@ -287,8 +287,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing
     ///
-    open class func logln(_ level: Level = .debug, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func logln(_ level: Level = .debug, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log a message if the logger's log level is equal to or lower than the specified level.
@@ -303,8 +303,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing
     ///
-    open func logln(_ closure: @autoclosure () -> Any?, level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func logln(_ closure: @autoclosure () -> Any?, level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(level, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log a message if the logger's log level is equal to or lower than the specified level.
@@ -319,8 +319,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing
     ///
-    open func logln(_ level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        logln(level, functionName: String(describing: functionName), fileName: String(describing: fileName), lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func logln(_ level: Level = .debug, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        logln(level, functionName: String(describing: functionName), fileName: String(describing: fileName), lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log a message if the logger's log level is equal to or lower than the specified level.
@@ -335,12 +335,12 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing
     ///
-    open func logln(_ level: Level = .debug, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
+    open func logln(_ level: Level = .debug, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
         let enabledDestinations = destinations.filter({$0.isEnabledFor(level: level)})
         guard enabledDestinations.count > 0 else { return }
         guard let closureResult = closure() else { return }
 
-        let logDetails: LogDetails = LogDetails(level: level, date: Date(), message: String(describing: closureResult), functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo)
+        let logDetails: LogDetails = LogDetails(level: level, date: Date(), message: String(describing: closureResult), functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo)
         for destination in enabledDestinations {
             destination.process(logDetails: logDetails)
         }
@@ -396,8 +396,8 @@ open class XCGLogger: CustomDebugStringConvertible {
         let XCGLoggerVersionNumber = XCGLogger.Constants.versionString
 
         var logDetails: [LogDetails] = []
-        logDetails.append(LogDetails(level: .info, date: date, message: "\(processInfo.processName) \(buildString)PID: \(processInfo.processIdentifier)", functionName: "", fileName: "", lineNumber: 0, userInfo: XCGLogger.Constants.internalUserInfo))
-        logDetails.append(LogDetails(level: .info, date: date, message: "XCGLogger Version: \(XCGLoggerVersionNumber) - Level: \(outputLevel)", functionName: "", fileName: "", lineNumber: 0, userInfo: XCGLogger.Constants.internalUserInfo))
+        logDetails.append(LogDetails(level: .info, date: date, message: "\(processInfo.processName) \(buildString)PID: \(processInfo.processIdentifier)", functionName: "", fileName: "", lineNumber: 0, dso: #dsohandle, userInfo: XCGLogger.Constants.internalUserInfo))
+        logDetails.append(LogDetails(level: .info, date: date, message: "XCGLogger Version: \(XCGLoggerVersionNumber) - Level: \(outputLevel)", functionName: "", fileName: "", lineNumber: 0, dso: #dsohandle, userInfo: XCGLogger.Constants.internalUserInfo))
 
         for var destination in (selectedDestination != nil ? [selectedDestination!] : destinations) where !destination.haveLoggedAppDetails {
             for logDetail in logDetails {
@@ -421,8 +421,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Verbose log level.
@@ -436,8 +436,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func verbose(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func verbose(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Verbose log level.
@@ -451,8 +451,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Verbose log level. This format of verbose() isn't provided the object to log, instead the property *`noMessageClosure`* is executed instead.
@@ -465,8 +465,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Verbose log level.
@@ -480,8 +480,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func verbose(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func verbose(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Verbose log level.
@@ -495,8 +495,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func verbose(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.verbose, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Debug
@@ -510,8 +510,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Debug log level.
@@ -525,8 +525,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func debug(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func debug(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Debug log level.
@@ -540,8 +540,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Debug log level. This format of debug() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -554,8 +554,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Debug log level.
@@ -569,8 +569,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func debug(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func debug(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Debug log level.
@@ -584,8 +584,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func debug(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.debug, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Info
@@ -599,8 +599,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Info log level.
@@ -614,8 +614,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func info(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func info(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Info log level.
@@ -629,8 +629,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Info log level. This format of info() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -643,8 +643,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Info log level.
@@ -658,8 +658,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func info(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func info(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Info log level.
@@ -673,8 +673,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func info(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.info, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Notice
@@ -688,7 +688,7 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
+    open class func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
         self.default.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
@@ -703,7 +703,7 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func notice(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
+    open class func notice(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
         self.default.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
     }
 
@@ -718,8 +718,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Notice log level. This format of notice() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -732,8 +732,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Notice log level.
@@ -747,8 +747,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func notice(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func notice(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Notice log level.
@@ -762,8 +762,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func notice(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.notice, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Warning
@@ -777,8 +777,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Warning log level.
@@ -792,8 +792,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func warning(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func warning(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Warning log level.
@@ -807,8 +807,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Warning log level. This format of warning() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -821,8 +821,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Warning log level.
@@ -836,8 +836,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func warning(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func warning(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Warning log level.
@@ -851,8 +851,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func warning(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.warning, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Error
@@ -866,8 +866,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Error log level.
@@ -881,8 +881,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func error(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func error(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Error log level.
@@ -896,8 +896,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Error log level. This format of error() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -910,8 +910,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Error log level.
@@ -925,8 +925,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func error(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func error(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Error log level.
@@ -940,8 +940,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func error(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.error, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Severe
@@ -955,8 +955,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Severe log level.
@@ -970,8 +970,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func severe(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func severe(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Severe log level.
@@ -985,8 +985,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Severe log level. This format of severe() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -999,8 +999,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Severe log level.
@@ -1014,8 +1014,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func severe(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func severe(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Severe log level.
@@ -1029,8 +1029,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func severe(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.severe, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Alert
@@ -1044,8 +1044,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Alert log level.
@@ -1059,8 +1059,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func alert(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func alert(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Alert log level.
@@ -1074,8 +1074,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Alert log level. This format of alert() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -1088,8 +1088,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Alert log level.
@@ -1103,8 +1103,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func alert(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func alert(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Alert log level.
@@ -1118,8 +1118,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func alert(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.alert, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: * Emergency
@@ -1133,8 +1133,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.default.noMessageClosure)
+    open class func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.default.noMessageClosure)
     }
 
     /// Log something at the Emergency log level.
@@ -1148,8 +1148,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func emergency(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.default.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func emergency(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.default.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Emergency log level.
@@ -1163,8 +1163,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open class func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.default.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open class func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.default.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Emergency log level. This format of emergency() isn't provided the object to log, instead the property `noMessageClosure` is executed instead.
@@ -1177,8 +1177,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: self.noMessageClosure)
+    open func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: self.noMessageClosure)
     }
 
     /// Log something at the Emergency log level.
@@ -1192,8 +1192,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func emergency(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:]) {
-        self.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func emergency(_ closure: @autoclosure () -> Any?, functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:]) {
+        self.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     /// Log something at the Emergency log level.
@@ -1207,8 +1207,8 @@ open class XCGLogger: CustomDebugStringConvertible {
     ///
     /// - Returns:  Nothing.
     ///
-    open func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, userInfo: [String: Any] = [:], closure: () -> Any?) {
-        self.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, userInfo: userInfo, closure: closure)
+    open func emergency(_ functionName: StaticString = #function, fileName: StaticString = #file, lineNumber: Int = #line, dso: UnsafeRawPointer = #dsohandle, userInfo: [String: Any] = [:], closure: () -> Any?) {
+        self.logln(.emergency, functionName: functionName, fileName: fileName, lineNumber: lineNumber, dso: dso, userInfo: userInfo, closure: closure)
     }
 
     // MARK: - Exec Methods
@@ -1525,7 +1525,7 @@ open class XCGLogger: CustomDebugStringConvertible {
     /// - Returns:  Nothing
     ///
     internal func _logln(_ message: String, level: Level = .debug, source sourceDestination: DestinationProtocol? = nil) {
-        let logDetails: LogDetails = LogDetails(level: level, date: Date(), message: message, functionName: "", fileName: "", lineNumber: 0, userInfo: XCGLogger.Constants.internalUserInfo)
+        let logDetails: LogDetails = LogDetails(level: level, date: Date(), message: message, functionName: "", fileName: "", lineNumber: 0, dso: #dsohandle, userInfo: XCGLogger.Constants.internalUserInfo)
         for destination in self.destinations {
             if level >= .error && sourceDestination?.identifier == destination.identifier { continue }
             if (destination.isEnabledFor(level: level)) {

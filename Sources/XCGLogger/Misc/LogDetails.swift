@@ -31,16 +31,19 @@ public struct LogDetails {
     /// The line number that generated this log
     public var lineNumber: Int
 
+    public var dso: UnsafeRawPointer
+
     /// Dictionary to store miscellaneous data about the log, can be used by formatters and filters etc. Please prefix any keys to help avoid collissions.
     public var userInfo: [String: Any]
 
-    public init(level: XCGLogger.Level, date: Date, message: String, functionName: String, fileName: String, lineNumber: Int, userInfo: [String: Any] = [:]) {
+    public init(level: XCGLogger.Level, date: Date, message: String, functionName: String, fileName: String, lineNumber: Int, dso: UnsafeRawPointer, userInfo: [String: Any] = [:]) {
         self.level = level
         self.date = date
         self.message = message
         self.functionName = functionName
         self.fileName = fileName
         self.lineNumber = lineNumber
+        self.dso = dso
         self.userInfo = userInfo
     }
 }
